@@ -10,12 +10,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 
 
-public class QuizConfiguration extends Configuration implements AssetsBundleConfiguration{
+public class QuizConfiguration extends Configuration implements AssetsBundleConfiguration {
 
     @Valid
     @NotNull
     @JsonProperty
     private final AssetsConfiguration assets = new AssetsConfiguration();
+
     @Override
     public AssetsConfiguration getAssetsConfiguration() {
         // TODO Auto-generated method stub

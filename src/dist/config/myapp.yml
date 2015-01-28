@@ -1,3 +1,20 @@
 server:
-    type: default
-    maxThreads: 1024
+  type: default
+  maxThreads: 1024
+
+assets:
+  cacheSpec: maximumSize=0
+  overrides:
+    /quiz: src/main/resources/assets/
+
+logging:
+  level: INFO
+  loggers:
+    "com.sun.jersey.api.container.filter.LoggingFilter": 
+  appenders:
+    - type: console
+      target: stderr
+
+    - type: file
+      currentLogFilename: ./logs/quiz-site.log
+      archive: false

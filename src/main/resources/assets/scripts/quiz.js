@@ -1,37 +1,22 @@
 $(document).ready(function() {
+	$.ajax("http://localhost:8080/api/quiz?id=0").then(function(data) {
+		var questions = data.questions;
+		var choiceSets = data.choices;
+	
 	var questionNumber = 0;
-	var score = 0;
 	var savedAnswers = [];
-	var questions = [
-		{
-			question: "Who is the PM of England?",
-			choices: ["John Stamos", "Gordon Brown", "Barack Obama", "Queen Elizabeth"],
-			answer: 1
-		},
-		{
-			question: "What color is the sky?",
-			choices: ["Green", "Potato", "Blue", "Turqoise"],
-			answer: 2 
-		},
-		{
-			question: "Do you like green eggs and ham?",
-			choices: ["Yes", "No", "What?", "Depends on how the eggs are cooked", "I don't know"],
-			answer: 0
-		}
-	];
 	var $quizBox = $('#quiz-box');
 	$quizBox.empty();
 
 	var createQuestion = function()	{
-		console.log('quest #: ' + questionNumber);
 		var $divEl;
 		var $inputEl;
 		var $labelEl;
 		var inputId;
 		var question = questions[questionNumber];
-		var choices = question.choices;
+		var choices = choiceSets[questionNumber];
 		var i;
-		var $questionEl = $('<p>').text(question.question);
+		var $questionEl = $('<p>').text(question);
 		$quizBox.append($questionEl);
 		for (i = 0; i < choices.length; i++) {
 			$divEl = $('<div>', {class: 'radio'});
@@ -48,14 +33,17 @@ $(document).ready(function() {
 		var $quizRegion = $('#quiz-region');
 		$quizRegion.empty();
 		var score = 0;
-		var i; 
-		for (i = 0; i < questions.length; i++) {
-			if (savedAnswers[i] == questions[i].answer) {
-				score++;
-			}
-		}
-		var $scoreEl = $('<p>', {id: 'score'}).text('Score: ' + score + '/' + questions.length);
-		$quizRegion.append($scoreEl);
+		$.ajax({
+			url: "http://localhost:8080/api/score", 
+			type: 'POST',
+			dataType:'json', 
+			contentType: 'application/json',
+			data: JSON.stringify({'answers': savedAnswers})
+
+		}).then(function(data) {
+			var $scoreEl = $('<p>', {id: 'score'}).text('Score: ' + data.score + '/' + questions.length);
+			$quizRegion.append($scoreEl);
+		});
 	}
 
 	var warnNoSelection = function () {
@@ -71,7 +59,6 @@ $(document).ready(function() {
 
 	var getAnswer = function() {
 		var val = $('input[name=answers]:checked', '#quiz-box').val();
-		console.log("Value: " + val);
 		return val;
 	}
 
@@ -86,7 +73,6 @@ $(document).ready(function() {
 	$('#next').click(function() {
 		$(this).blur();
 		var val = getAnswer();
-		console.log("Value: " + val);
 		if(val == undefined) {
 			warnNoSelection();
 			return;
@@ -110,11 +96,11 @@ $(document).ready(function() {
 	});
 
 	$('#previous').click(function() {
+		$(this).blur();
 		if (questionNumber == 1) {
 			$(this).hide();
 		} 
 		var val = getAnswer();
-		console.log("Value: " + val);
 		savedAnswers[questionNumber] = val;
 		questionNumber--;
 		$quizBox.empty();
@@ -125,7 +111,7 @@ $(document).ready(function() {
 
 
 
-
+});
 
 
 
